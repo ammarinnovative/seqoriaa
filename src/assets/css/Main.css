@@ -1,0 +1,28 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@100;200;300;400;500;600;700;800;900&display=swap');
+::-webkit-scrollbar{width:4px;background-color:transparent;}
+::-webkit-scrollbar-button:start:decrement,::-webkit-scrollbar-button:end:increment{display:none;}
+::-webkit-scrollbar-track-piece{background-color:#dedede00;}
+::-webkit-scrollbar-thumb:vertical{border-radius:0px;-webkit-box-shadow:inset 0 0 6px rgba(0,0,0,.3);background-image:linear-gradient(#4A4A4A,#4A4A4A);}
+p, h1, h2, h3, h4, h5, h6{font-family: 'Inter' !important;}
+body{overflow-x: hidden;}
+.formLabel{color: #344054;font-weight: 600;font-size: 15px;}
+.cyberResiliencyMain>div{display: flex;align-items: center;justify-content: center;gap: 10px;}
+.cyberResiliencyMain>div>span{font-weight: 600;font-family: 'Inter' !important;font-size: 16px;width: 122px;text-align: right;}
+.cyberResiliencyMain>div>div{margin: 0 !important;width: 100%;}
+.cyberResiliencyMain>div>div input{width: 94%;}
+.breadCrumMain li a {color: #A9A9A9;font-size: 10px;font-family: 'Inter';text-decoration: underline;margin: 0 0 -4px 0;font-weight: 700;text-transform: capitalize;}
+.breadCrumMain li:first-child a{color:#262626;text-decoration:none;text-transform:initial;cursor:initial;}
+.logoSideBox>div{display:flex;align-items:center;gap:10px;font-family:'Inter';}
+.logoSideBox>div>div{margin:0;width:250px;}
+.riskSummaryList ul{margin: 10px 0 0 0;}
+.riskSummaryList ul li{cursor: pointer;list-style: none;;transition: .3s;color: #8A959E;font-size: 14px;font-weight: 600;padding: 10px 0 10px 15px;}
+.riskSummaryList ul li.current{background-color: #ADADAD;color: #fff;}
+.timeList ul li{margin: 5px 0;list-style: none;font-size: 14px;font-weight: 700;color: #a9a9a9;text-decoration: underline;cursor: pointer;transition: .3s;}
+.timeList ul li.current{color: #262626;text-decoration: none;}
+.enerpriseRiskTable tr td{font-weight: 500;padding: 10px;}
+.enerpriseRiskTableHead tr td{padding: 10px;}
+.recharts-wrapper{margin: 0 auto;}
+.trackLine{width: 1200px;height: 8px;}
+.vendorConfigOpt span{color: #344054;font-weight: 500;font-size: 14px;}
+.vendorConfigOpt input{margin: 10px 0 20px 0;}
+.lineChart canvas{width: 700px !important;}
