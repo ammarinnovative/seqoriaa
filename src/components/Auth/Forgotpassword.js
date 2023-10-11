@@ -19,9 +19,7 @@ import { useForm, Controller } from 'react-hook-form';
 import { POST } from '../../utilities/ApiProvider';
 import { BaseURL } from '../../utilities/config';
 
-export default function Factorauth() {
-
-
+export default function Forgotpassword() {
     const {
         control,
         register,
@@ -46,21 +44,20 @@ export default function Factorauth() {
         // console.log(response);
         toast({
         //   description: `User logged in as: ${response.orgName}`,
-        description: "Login Success",
+        description: "Check Your Email",
           isClosable: true,
           status: 'success',
           position: 'top-right',
           duration: 4500,
         });
        
-        navigation('/cloud-onboarding')
+        navigation('/')
       };
-
   return (
     <>
     <Image src={Logo} width={'160px'} margin={'65px auto 100px'} />
       <Heading fontSize={'30px'} fontWeight={600} textAlign={'center'}>
-      Login Authentication
+      Forgot Verification
       </Heading>
       <Text
         fontSize={'16px'}
@@ -68,7 +65,7 @@ export default function Factorauth() {
         color={'#8A959E'}
         textAlign={'center'}
       >
-        Please Enter  Your Verification Code
+        Please Enter  Your Email
       </Text>
       <Divider style={{ margin: '35px 0' }} />
       <form
@@ -77,8 +74,8 @@ export default function Factorauth() {
           console.log(e);
         })}
       >
-        {/* <Stack w={'full'} mb={4}>
-          <Typography.Text>Login ID</Typography.Text>
+        <Stack w={'full'} mb={4}>
+          <Typography.Text>Login Email</Typography.Text>
           <Form.Item>
             <Controller
               name="username"
@@ -88,7 +85,7 @@ export default function Factorauth() {
                 <Input
                   {...field}
                   size="large"
-                  placeholder="Allen"
+                  placeholder="Email@example.com"
                   name="username"
                   prefix={<UserOutlined />}
                   //   onChange={e =>
@@ -105,8 +102,8 @@ export default function Factorauth() {
               {errors.username?.message}
             </Text>
           </Form.Item>
-        </Stack> */}
-        <Stack w={'full'} mb={4}>
+        </Stack>
+        {/* <Stack w={'full'} mb={4}>
           <Typography.Text>Verification Code</Typography.Text>
           <Form.Item>
             <Controller
@@ -147,7 +144,7 @@ export default function Factorauth() {
               {errors.passcode?.message}
             </Text>
           </Form.Item>
-        </Stack>
+        </Stack> */}
 
         <Button
           // onClick={() => { submitLogin() }}

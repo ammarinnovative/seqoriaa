@@ -21,7 +21,7 @@ export const POST = async(url, data = {}, headers = {}) => {
     }
 }
 
-export const PUT = async(url, data = {}, headers = {}) => {
+export const PUT = async(url, data = {}, headers = {'Access-Control-Allow-Origin': true,}) => {
     try {
         const res = await axios.put(
             url, 
@@ -44,7 +44,7 @@ export const PUT = async(url, data = {}, headers = {}) => {
 export const GET = async(url, headers = {}) => {
     try {
         const res = await axios.get(
-            url, 
+            BaseURL+url, 
             {
                 headers,
                 validateStatus: status => {

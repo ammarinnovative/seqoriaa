@@ -8,6 +8,7 @@ import {
   Heading,
   Icon,
   Image,
+  Link,
   Stack,
   Text,
   useToast,
@@ -22,6 +23,7 @@ import { useForm, Controller } from 'react-hook-form';
 import { POST } from '../../utilities/ApiProvider';
 import { BaseURL } from '../../utilities/config';
 import axios from 'axios';
+import { Link as ReactLink } from 'react-router-dom';
 
 export default function Login({ setShowLogin }) {
   const dispatch = useDispatch();
@@ -43,17 +45,15 @@ export default function Login({ setShowLogin }) {
       orgId: 22,
     };
     try {
-      let response = await POST(`api/onboard/users/authenticate`, tepdata);
-      if (response?.error) {
-        toast({
-          description: response?.error,
-          isClosable: true,
-          status: 'error',
-          position: 'top-right',
-          duration: 4500,
-        });
-        return;
-      } else {
+      let response = await POST(`api/onboard/users/authenticate`, tepdata,{
+        headers :{
+          "Cache-Control": "no-cache",
+          "Content-Type": "application/x-www-form-urlencoded",
+        },
+      }
+      );
+      console.log(response );
+      if (response?.accessToken) {
         toast({
           description: `User logged in as: ${response.orgName}`,
           isClosable: true,
@@ -66,6 +66,14 @@ export default function Login({ setShowLogin }) {
         setShowLogin(true);
         navigation('/Multifactor');
         dispatch(loadUser(response));
+      } else {
+        toast({
+          description: response?.error,
+          isClosable: true,
+          status: 'error',
+          position: 'top-right',
+          duration: 4500,
+        });
       }
     } catch (error) {
       toast({
@@ -170,7 +178,9 @@ export default function Login({ setShowLogin }) {
             </Text>
           </Form.Item>
         </Stack>
-
+<Stack textAlign={'right'}>
+  <Link fontSize={'14px'} textDecoration={'none !important'} as={ReactLink} to={'/Forgotverification'} >Forgot Password</Link>
+</Stack>
         <Button
           // onClick={() => { submitLogin() }}
           type="submit"
@@ -178,7 +188,7 @@ export default function Login({ setShowLogin }) {
           color={'#fff'}
           padding={'12px'}
           w={'full'}
-          margin={'38px 0 25px'}
+          margin={'25px 0 25px'}
           fontSize={'16px'}
           fontWeight={'500'}
           border={'2px solid #4A4A4A'}

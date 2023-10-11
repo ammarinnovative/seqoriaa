@@ -1,7 +1,7 @@
 import { Box, Button, Icon, Image, Stack, Text } from '@chakra-ui/react'
 import { BsChevronDown, BsChevronUp } from 'react-icons/bs'
 
-export default function HostCloudButton({ findData,id,iconPath, image, imageWhite, name, selectedCloudOption, setSelectedCloudOption }) {
+export default function HostCloudButton({ findData,id,iconPath,getMainData, image, imageWhite, name, selectedCloudOption, setSelectedCloudOption }) {
     return (
         <Button
             background={'#F0F0F0'}

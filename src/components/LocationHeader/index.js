@@ -2,10 +2,9 @@ import { Icon, Stack, Text } from "@chakra-ui/react";
 import { useLocation } from "react-router-dom";
 import { BsChevronRight } from 'react-icons/bs'
 
-export default function LocationHeader({ optionsList, followingRoute, forcedText }) {
+export default function LocationHeader({ optionsList, followingRoute, forcedText ,selectedCloudOption}) {
+    console.log("optionsList",optionsList[0]);
     const location = useLocation();
-    console.log(optionsList)
-    console.log(followingRoute)
     return (
         <Stack
             direction={'row'}
@@ -38,7 +37,8 @@ export default function LocationHeader({ optionsList, followingRoute, forcedText
                         >
                             {
                                 optionsList &&
-                                <Text color={'#8A959E'} as={'span'}>{i === 0 ? <Icon as={BsChevronRight} fontSize={12} /> : ','} {optionsList[i]}</Text>
+                                selectedCloudOption == 'Host Cloud'?
+                                <Text color={'#8A959E'} as={'span'}>{i === 0 ? <Icon as={BsChevronRight} fontSize={12} /> : ','}{selectedCloudOption}</Text>:  <Text color={'#8A959E'} as={'span'}>{i === 0 ? <Icon as={BsChevronRight} fontSize={12} /> : ','}{optionsList[0]+" "}{ <Icon as={BsChevronRight} fontSize={12} />}{ selectedCloudOption}</Text>
                             }
                             <Text color={'#8A959E'} as={'span'}><Icon as={BsChevronRight} fontSize={12} /> {v}</Text>
                         </Stack>

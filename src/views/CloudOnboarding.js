@@ -22,12 +22,21 @@ import AdditionalPeers from '../components/CloudComponents/AdditionalPeers.js';
 import { GET, POST } from '../utilities/ApiProvider.js';
 import axios from 'axios';
 import { BaseURL } from '../utilities/config.js';
+import { Form } from 'antd';
 
 export default function CloudOnboarding() {
   const navigation = useNavigate();
   const [user, setUser] = useState({});
-  const [selectedCloudOption, setSelectedCloudOption] = useState('Host Cloud');
+  const [selectedCloudOption, setSelectedCloudOption] = useState('');
   const [apiData, setApiData] = useState(null);
+  const [main, setMain] = useState();
+  const [mainVal,setMainVal] = useState({
+    rgn1:"",
+    format:"",
+    rgn2:"",
+    name:"",
+    content:""
+  });
   const apiUrl = 'https://144.126.248.16.nip.io/api/v1/worker/supported-vendor';
   const [hostData, setHostData] = useState([]);
   const [optionsList] = useState(['Host Cloud', 'Peer 1', 'Peer 2']);
@@ -116,6 +125,7 @@ export default function CloudOnboarding() {
     if (localStorage.getItem('accessToken')) {
       try {
         const res = await GET(`api/v1/worker/supported-vendor/`);
+        console.log(res);
         setHostData(Array.isArray(res) ? res : [res]); // Ensure hostData is an array
       } catch (error) {
         // Handle errors
@@ -175,10 +185,11 @@ export default function CloudOnboarding() {
 
   const getVenderManagement = async () => {
     if (localStorage.getItem('accessToken')) {
-      const res = await GET(`/api/v1/worker/tenant/vendor/`, {
-        // authorization: `Bearer ${token}`,
+      const res = await GET(`api/v1/worker/tenant/vendor/`, {
+        
       });
       setData(res);
+      console.log("res",res);
     } else {
       toast({
         position: 'bottom-left',
@@ -189,6 +200,67 @@ export default function CloudOnboarding() {
       });
     }
   };
+
+  // const getMainData = async e => {
+  //   const {name,value,files} = e.target;
+
+  //   console.log(name,value);
+  //   if (files) {
+  //     const reader = new FileReader();
+  //     reader.onload()
+  //     // const formdata = new FormData();
+  //     // formdata.append(name,value);
+  //     // setMainVal({...mainVal,formdata});
+  //   }else{
+  //     setMainVal({
+  //       ...mainVal,[name]:value
+  //     });
+  //   }
+   
+  // };
+
+  const getMainData = async (e) => {
+    const { name, value, files } = e.target;
+  
+    if (files) {
+      const file = files[0]; // Assuming you handle only one file at a time
+  
+      if (file) {
+        const reader = new FileReader();
+  
+        reader.onload = (readerEvent) => {
+          const binaryImageData = readerEvent.target.result; // This contains the raw binary data of the image as an ArrayBuffer
+  
+          // Convert the binary image data to a Base64-encoded string using a DataView
+          const dataView = new DataView(binaryImageData);
+          let base64ImageString = '';
+  
+          for (let i = 0; i < dataView.byteLength; i++) {
+            base64ImageString += String.fromCharCode(dataView.getUint8(i));
+          }
+  
+          base64ImageString = btoa(base64ImageString);
+  
+          // Update only the "content" field in mainVal with the string representation
+          setMainVal({
+            ...mainVal,
+            content: base64ImageString, // This sets it as a Base64-encoded string
+          });
+        };
+  
+        reader.readAsArrayBuffer(file); // Read the file as an ArrayBuffer
+      }
+    } else {
+      // If it's not a file input, update other fields as usual
+      setMainVal({
+        ...mainVal,
+        [name]: value,
+      });
+    }
+  };
+  
+  
+
 
   const findData = val => {
     setValue({
@@ -202,28 +274,51 @@ export default function CloudOnboarding() {
     });
     setFilterData(find);
   };
-  const sendData =async  ()=>{
-    const res = await POST("api/v1/worker/tenant/vendor/",filterData);
-    try {
-      if(res?.configurations){
-        toast({
-          position:"bottom-left",
-          isClosable:true,
-          duration:5000,
-          status:"success",
-          description:"Success"
-        });
-      }
-    } catch (error) {
+  const sendData = async () => {
+    if(!mainVal.name || !mainVal.rgn1 || !mainVal.rgn2 || !mainVal.format || !mainVal.content){
       toast({
         position:"bottom-left",
         isClosable:true,
         duration:5000,
         status:"error",
-        description:error?.message
+        description:"Please fill all the fields"
+      });
+      return;
+    }
+    let data = filterData;
+    data.configurations.host.configurationFiles = {
+      rgn:mainVal.rgn1,
+      name:mainVal.name,
+      content:mainVal.content
+    }
+    
+    data.configurations.host.variables = {
+      rgn:mainVal.rgn2,
+      format:mainVal.format
+    }
+    console.log("data",data);
+    const res = await POST('api/v1/worker/tenant/vendor/', data);
+    console.log("res",res);
+    try {
+      if (res?.configurations) {
+        toast({
+          position: 'bottom-left',
+          isClosable: true,
+          duration: 5000,
+          status: 'success',
+          description: 'Success',
+        });
+      }
+    } catch (error) {
+      toast({
+        position: 'bottom-left',
+        isClosable: true,
+        duration: 5000,
+        status: 'error',
+        description: error?.message,
       });
     }
-  }
+  };
   useEffect(() => {
     if (selector) {
       setUser(selector.value);
@@ -239,14 +334,15 @@ export default function CloudOnboarding() {
 
 
 
+
   return (
     <SideWrapper>
       <Stack w={'full'} margin={'40px 50px 30px 35px !important'}>
         {/* Current Location identifier */}
         <LocationHeader
           optionsList={optionsList}
+          selectedCloudOption={selectedCloudOption}
           followingRoute={[
-            // selectedCloudOption,
             selectedHostOption?.name,
             selectedPeer1Option?.name,
             selectedPeer2Option?.name,
@@ -273,9 +369,9 @@ export default function CloudOnboarding() {
           ))}
         </Stack>
         {/* Selected cloud option extended*/}
-        <SpacedStack>
-          {selectedCloudOption === 'Host Cloud' ? (
+        {selectedCloudOption === 'Host Cloud' ? (
             <>
+              <SpacedStack>
               <Heading fontSize={'22px'} margin={'0 0 10px 0'}>
                 Host Cloud
               </Heading>
@@ -298,11 +394,17 @@ export default function CloudOnboarding() {
                     />
                   ))}
               </Stack>
+              </SpacedStack>
+             
             </>
           ) : selectedCloudOption === 'Peer 1' ? (
             <>
+            <SpacedStack>
+              <>
+              <SpacedStack>
               <Heading fontSize={'22px'} margin={'0 0 10px 0'}>
-                Peer 1
+              Peer 1
+
               </Heading>
               <Stack
                 direction={'row'}
@@ -311,20 +413,32 @@ export default function CloudOnboarding() {
                 flexWrap={'wrap'}
                 spacing={0}
               >
-                {peer1?.map((v, i) => (
-                  <HostCloudButton
-                    {...v}
-                    key={i}
-                    selectedCloudOption={selectedPeer1Option}
-                    setSelectedCloudOption={setSelectedPeer1Option}
-                  />
-                ))}
+                {hostData?.length > 0 &&
+                  hostData &&
+                  hostData?.map((v, i) => (
+                    <HostCloudButton
+                      {...v}
+                      key={i}
+                      findData={findData}
+                      selectedCloudOption={selectedHostOption}
+                      setSelectedCloudOption={setSelectedHostOption}
+                    />
+                  ))}
               </Stack>
+              </SpacedStack>
+             
+            </>
+            </SpacedStack>
+             
             </>
           ) : selectedCloudOption === 'Peer 2' ? (
             <>
+            <SpacedStack>
+            <>
+              <SpacedStack>
               <Heading fontSize={'22px'} margin={'0 0 10px 0'}>
-                Peer 2
+              Peer 2
+
               </Heading>
               <Stack
                 direction={'row'}
@@ -333,50 +447,74 @@ export default function CloudOnboarding() {
                 flexWrap={'wrap'}
                 spacing={0}
               >
-                {peer2?.map((v, i) => (
-                  <HostCloudButton
-                    {...v}
-                    key={i}
-                    selectedCloudOption={selectedPeer2Option}
-                    setSelectedCloudOption={setSelectedPeer2Option}
-                  />
-                ))}
+                {hostData?.length > 0 &&
+                  hostData &&
+                  hostData?.map((v, i) => (
+                    <HostCloudButton
+                      {...v}
+                      key={i}
+                      findData={findData}
+                      selectedCloudOption={selectedHostOption}
+                      setSelectedCloudOption={setSelectedHostOption}
+                    />
+                  ))}
               </Stack>
+              </SpacedStack>
+             
             </>
-          ) : (
+            </SpacedStack>
+             
+            </>
+          ) 
+          : selectedCloudOption === 'Additional Peers' ? (
             <>
-              <Heading fontSize={'22px'} margin={'0 0 10px 0'}>
+            <SpacedStack>
+            <Heading fontSize={'22px'} margin={'0 0 10px 0'}>
                 Additional Peers
               </Heading>
               <AdditionalPeers />
+            </SpacedStack>
+             
+            </>
+          )
+          : (
+            <>
+           
             </>
           )}
-        </SpacedStack>
         {/* Extended selected host cloud */}
         {selectedHostOption && (
+          <>
           <StackWrapper>
             {selectedCloudOption === 'Host Cloud' && selectedHostOption ? (
-              <CloudLogin sendData={sendData} filterData={filterData} />
-            ) : selectedCloudOption === 'Peer 1' &&
-              selectedPeer1Option?.id > 0 &&
-              selectedPeer1Option?.id < 12 ? (
               <CloudLogin
-                image={peer1[selectedPeer1Option?.id - 1]['image'] ?? null}
-                id={peer1[selectedPeer1Option?.id - 1]['id'] ?? ''}
-                name={peer1[selectedPeer1Option?.id - 1]['name'] ?? null}
+                getMainData={getMainData}
+                sendData={sendData}
+                mainVal={mainVal}
+                filterData={filterData}
+              />
+              
+            ) : selectedCloudOption === 'Peer 1' &&
+            selectedHostOption ? (
+              <CloudLogin
+              getMainData={getMainData}
+              sendData={sendData}
+              mainVal={mainVal}
+              filterData={filterData}
               />
             ) : selectedCloudOption === 'Peer 2' &&
-              selectedPeer2Option?.id > 0 &&
-              selectedPeer2Option?.id < 12 ? (
+            selectedHostOption ? (
               <CloudLogin
-                image={peer2[selectedPeer2Option?.id - 1]['image'] ?? null}
-                id={peer2[selectedPeer2Option?.id - 1]['id'] ?? ''}
-                name={peer2[selectedPeer2Option?.id - 1]['name'] ?? null}
+              getMainData={getMainData}
+              sendData={sendData}
+              mainVal={mainVal}
+              filterData={filterData}
               />
             ) : (
               <></>
             )}
           </StackWrapper>
+          </>
         )}
       </Stack>
     </SideWrapper>
